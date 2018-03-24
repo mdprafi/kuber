@@ -1,0 +1,42 @@
+---
+- hosts
+
+- name: install git 
+      yum: name=git state=present
+      
+ - name: Install Ansible  
+      yum: name=epel-repo state=present
+      yum: name=ansible state=present
+       
+- name: Install Jenkins repo
+  command: wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
+  
+  - name: Import Jenkins CI key
+    rpm_key:
+    key: http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
+    
+  - name: Install Jenkins  
+      yum: name=jenkins state=latest
+      register: jenkins_install
+   
+   - name: Start the server
+     service:
+      name: jenkins
+      state: started
+   
+ - name: Add Docker repo
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docer-ce.repo
+         
+  - name: Install Docker
+      package:
+        name: docker-ce
+        state: latest
+        
+  - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+        
